@@ -6,7 +6,7 @@ import { Navigate } from 'react-router-dom';
 function Logout() {
   const dispatch = useDispatch();
   dispatch(logoutUser());
-  return <Navigate to="/" replace />;
+  return <Navigate to="/login" replace />;
 }
 
 export default Logout;

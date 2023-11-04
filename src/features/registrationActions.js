@@ -8,5 +8,8 @@ export const register = (userData) => async (dispatch) => {
     dispatch(setRegistrationSuccessData(response.data));
   } catch (error) {
     console.error('Registration failed:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+    }
   }
 };
