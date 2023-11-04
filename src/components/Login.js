@@ -19,31 +19,40 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-  
     setEmailError('');
     setPasswordError('');
     setErrorMessage('');
-
+  
     if (!emailValidator.validate(credentials.email)) {
       setEmailError('Invalid email format. Please enter a valid email.');
       return;
     }
-
     if (!credentials.password) {
       setPasswordError('Password is required.');
       return;
     }
     setLoading(true);
-
+  
     try {
-       dispatch(login(credentials));
-      navigate('/dashboard');
+      const response = await dispatch(login(credentials));
+      if (response && response.success) {
+        if (response.data.password === credentials.password) {
+          navigate('/dashboard');
+        } else {
+          setErrorMessage('Login failed: Password does not match.');
+        }
+      } else {
+        setErrorMessage('Login failed: User info not matched with API.');
+      }
     } catch (error) {
       setErrorMessage('Login failed: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
+  
+  
+  
 
   return (
     <div>

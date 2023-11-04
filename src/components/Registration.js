@@ -12,36 +12,58 @@ function Registration() {
 
   const [emailFormatError, setEmailFormatError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const handleNameChange = (e) => {
+    setUserData({ ...userData, name: e.target.value });
+    setErrorMessage('');
+  }
+
+  const handleEmailChange = (e) => {
+    setUserData({ ...userData, email: e.target.value });
+    setEmailFormatError(false); 
+    setErrorMessage(''); 
+  }
+
+  const handlePasswordChange = (e) => {
+    setUserData({ ...userData, password: e.target.value });
+    setErrorMessage('');
+  }
+
   const handleRegistration = () => {
-    setLoading(true);
+    if (!userData.name || !userData.password) {
+      setErrorMessage('Name and Password are required fields.');
+      return;
+    }
 
     if (!validateEmail(userData.email)) {
       setEmailFormatError(true);
-      setLoading(false); 
-    } else {
-      setEmailFormatError(false);
-
-      dispatch(register(userData))
-        .then(() => {
-          navigate('/login');
-        })
-        .catch((error) => {
-          alert('Registration failed: ' + error.message);
-        })
-        .finally(() => {
-          setLoading(false); 
-        });
+      return;
     }
-  };
+
+    setLoading(true);
+    setErrorMessage('');
+    setEmailFormatError(false);
+
+    dispatch(register(userData))
+      .then(() => {
+        navigate('/login');
+      })
+      .catch((error) => {
+        setErrorMessage('Registration failed: ' + error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
-  };
+  }
 
   return (
     <div>
@@ -50,14 +72,13 @@ function Registration() {
         type="text"
         placeholder="Name"
         value={userData.name}
-        onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-        required
+        onChange={handleNameChange}
       />
       <input
-        type="text"
+        type="email"
         placeholder="Email"
         value={userData.email}
-        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+        onChange={handleEmailChange}
         required
       />
       {emailFormatError && (
@@ -67,9 +88,9 @@ function Registration() {
         type="password"
         placeholder="Password"
         value={userData.password}
-        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
-        required
+        onChange={handlePasswordChange}
       />
+      <p style={{ color: 'red' }}>{errorMessage}</p>
       <button onClick={handleRegistration} disabled={loading}>
         {loading ? 'Loading...' : 'Register'}
       </button>
@@ -78,3 +99,4 @@ function Registration() {
 }
 
 export default Registration;
+
